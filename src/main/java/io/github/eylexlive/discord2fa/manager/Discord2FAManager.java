@@ -14,8 +14,20 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
+import org.json.simple.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 /*
@@ -89,7 +101,7 @@ public class Discord2FAManager {
                     player, code
             );
         }
-        
+
         /*
         Bukkit.getScheduler().runTaskLater(plugin, () ->
                 sitPlayer(player), 13L
@@ -102,6 +114,15 @@ public class Discord2FAManager {
                 )
         );
 
+        // Get Config blind-on-auth
+
+        if (ConfigUtil.getBoolean("blind-on-auth")) {
+
+                // Blind player
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1));
+
+        }
+
         final CountdownTask task = new CountdownTask(
                 this,  player
         );
@@ -111,11 +132,27 @@ public class Discord2FAManager {
     }
 
     public void removePlayerFromCheck(Player player) {
+
         if (!isInCheck(player))
             return;
 
         checkPlayers.remove(player);
-        //unSitPlayer(player);
+
+        /*
+        unSitPlayer(player);
+
+        if (plugin.isBlindOnAuthEnabled()) {
+
+                // Unblind player
+                p.getActivePotionEffects().clear();
+                p.sendMessage("§4§l[lDiscord2FA] §aYou are now unblinded.");
+
+        } else {
+                        
+                p.sendMessage("§4§l[lDiscord2FA] §a'Blind on Auth' is disabled, so you are not blinded.");
+        
+        }
+        */
 
         final PlayerData playerData = getPlayerData(player);
 
@@ -187,6 +224,39 @@ public class Discord2FAManager {
                         new AuthCompleteEvent(player)
                 )
         );
+
+    }
+
+    private String getCountry(String ip) {
+        
+        // Creamos la peticion a la API
+        String url = "http://ip-api.com/json/" + ip;
+        String json = null;
+
+        // Obtenemos la respuesta de la API y la guardamos en un String
+        try {
+                URL api = new URL(url);
+                URLConnection connection = api.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                json = in.readLine();
+                in.close();
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+        
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        JsonElement country = jsonObject.get("country"); 
+
+        if (country != null) {
+                String str_country = country.toString().replaceAll("\"", "");
+                return str_country;
+        } else {
+                return ConfigUtil.getString(
+                "messages.unknown-country-placeholder"
+                );
+        }
+
     }
 
     private void sendCode(Player player, String code) {
@@ -213,7 +283,11 @@ public class Discord2FAManager {
                 Collections.singletonList(memberId),
                 ConfigUtil.getString(
                         "messages.discord-message",
-                        "code:" + playerData.getCheckCode()
+                        "code:" + playerData.getCheckCode(), 
+                        "ip:" + player.getAddress().getAddress().getHostAddress(),
+                        "player:" + player.getName(),
+                        "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress())
+                        //"location:" + this.ipLocation("8.8.8.8")
                 )
         )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
     }
@@ -505,6 +579,7 @@ public class Discord2FAManager {
                         "messages.discord2fa-command.player-auth-timeout"
                 )
         );
+        
     }
 
     public boolean sendLog(String path, User user) {

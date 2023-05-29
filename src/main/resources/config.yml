@@ -20,6 +20,7 @@ rights-reached-console-command: 'tempban %player% 20m 2FA Failed'
 check-for-updates: true
 generate-new-code-always: true
 auto-verification: true
+blind-on-auth: true
 
 code-lenght: 6
 code-type: NUMERIC
@@ -76,7 +77,8 @@ canceled-events:
 
 messages:
   auto-verify-success-message: '&8&l- &6Automatic verification successful!'
-  discord-message: 'Your auth code: %code%'
+  discord-message: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
+  unknown-country-placeholder: 'Unknown'
   kick-message: '&cYou are kicked from the server because &fauth countdown time &cis reached! &cLeft rights&8:&f %rights%'
   msg-send-failed: '&8&l- &6Error while sending message to your Discord!'
   auth-message:

@@ -9,6 +9,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -96,11 +98,17 @@ public class AuthCommand implements CommandExecutor {
                 provider.authPlayer(player);
             }).whenComplete((future, err) -> {
                 if (err == null) {
+
                     player.sendMessage(
                             ConfigUtil.getString(
                                     "messages.auth-command.auth-success-message"
                             )
                     );
+                    player.getActivePotionEffects().clear();
+                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+
+                    player.sendMessage("Turned off all potion effects!");
+
                 } else {
                     player.sendMessage(
                             "§cAn error occurred while authenticating!"

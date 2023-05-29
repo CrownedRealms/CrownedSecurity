@@ -171,6 +171,12 @@ public class Discord2FA extends JavaPlugin {
         );
     }
 
+    public boolean isBlindOnAuthEnabled() {
+        return ConfigUtil.getBoolean(
+                "blind-on-auth"
+        );
+    }
+
     public boolean isValidateEdm() {
         return validateEdm;
     }

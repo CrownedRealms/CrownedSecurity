@@ -14,6 +14,7 @@ import java.util.List;
 
 /*
  *	Created by EylexLive on Feb 23, 2020.
+ *  Recoded by myc0de on May 29, 2023.
  *	Currently version: 3.5
  */
 
@@ -26,11 +27,11 @@ public class Discord2FACommand implements CommandExecutor {
         this.plugin = plugin;
         mainMessage = new String[]
                 {
-                "§6§lDiscord2FA running on the server. §f§lVersion: §6§lv"+
+                "§6§lDiscord2FA (Fork Version) running on the server. §f§lVersion: §6§lv"+
                         plugin.getDescription().getVersion(),
-                "§fMade by:§6§l EylexLive §fDiscord: §6§lUmut Erarslan#8378",
+                "§fRecoded by:§6§l myc0de",
                         "",
-                        "https://www.spigotmc.org/resources/75451"
+                        "https://www.spigotmc.org/resources/%E2%9C%A8-discord2fa-2-fork-version-%E2%9C%A8.110132/"
         };
     }
     
