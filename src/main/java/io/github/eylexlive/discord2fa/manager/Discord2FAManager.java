@@ -8,12 +8,12 @@ import io.github.eylexlive.discord2fa.task.Cancel2FAReqTask;
 import io.github.eylexlive.discord2fa.task.CountdownTask;
 import io.github.eylexlive.discord2fa.util.ConfigUtil;
 import net.dv8tion.jda.api.entities.User;
-import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -89,10 +89,12 @@ public class Discord2FAManager {
                     player, code
             );
         }
-
+        
+        /*
         Bukkit.getScheduler().runTaskLater(plugin, () ->
                 sitPlayer(player), 13L
         );
+         */
 
         player.sendMessage(
                 getAuthMessage(
@@ -113,7 +115,7 @@ public class Discord2FAManager {
             return;
 
         checkPlayers.remove(player);
-        unSitPlayer(player);
+        //unSitPlayer(player);
 
         final PlayerData playerData = getPlayerData(player);
 
@@ -163,7 +165,7 @@ public class Discord2FAManager {
 
         checkPlayers.remove(player);
 
-        unSitPlayer(player);
+        //unSitPlayer(player);
         unloadData(player);
 
         if (ConfigUtil.getBoolean("logs.enabled"))
@@ -288,6 +290,42 @@ public class Discord2FAManager {
         ).split("%nl%");
     }
 
+
+    private static final String NUMERIC_CHARS = "0123456789";
+    private static final String ALPHANUMERIC_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final String ALPHABETIC_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static Random random = new Random();
+
+    public static String randomNumeric(int count) {
+        StringBuilder sb = new StringBuilder(count);
+        for (int i = 0; i < count; i++) {
+            int randomIndex = random.nextInt(NUMERIC_CHARS.length());
+            char randomChar = NUMERIC_CHARS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+        return sb.toString();
+    }
+
+    public static String randomAlphanumeric(int count) {
+        StringBuilder sb = new StringBuilder(count);
+        for (int i = 0; i < count; i++) {
+            int randomIndex = random.nextInt(ALPHANUMERIC_CHARS.length());
+            char randomChar = ALPHANUMERIC_CHARS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+        return sb.toString();
+    }
+
+    public static String randomAlphabetic(int count) {
+        StringBuilder sb = new StringBuilder(count);
+        for (int i = 0; i < count; i++) {
+            int randomIndex = random.nextInt(ALPHABETIC_CHARS.length());
+            char randomChar = ALPHABETIC_CHARS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+        return sb.toString();
+    }
+
     public String getRandomCode(int count) {
         final CodeType codeType;
         try {
@@ -302,11 +340,16 @@ public class Discord2FAManager {
 
         switch (codeType) {
             case NUMERIC:
-                return RandomStringUtils.randomNumeric(count);
+                //return RandomStringUtils.randomNumeric(count);
+                return Discord2FAManager.randomNumeric(count);
             case ALPHANUMERIC:
-                return RandomStringUtils.randomAlphanumeric(count);
+                //return RandomStringUtils.randomAlphanumeric(count);
+                return Discord2FAManager.randomAlphanumeric(count);
             case ALPHABETIC:
-                return RandomStringUtils.randomAlphabetic(count);
+                //return RandomStringUtils.randomAlphabetic(count);
+                return Discord2FAManager.randomAlphabetic(count);
+
+
         }
 
         return null;
@@ -512,8 +555,10 @@ public class Discord2FAManager {
     }
 
     public void unSitPlayer(Player player) {
-        if (armorStands.containsKey(player))
-            armorStands.get(player).remove();
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+                if (armorStands.containsKey(player))
+                        armorStands.get(player).remove();;
+        });
     }
 
     public void reSitPlayer(Player player) {

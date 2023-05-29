@@ -11,11 +11,11 @@ import org.bukkit.event.Listener;
  */
 
 @SuppressWarnings("unused")
-public class AuthMeEvent implements Listener {
+public class AuthmeEvent implements Listener {
 
     private final Discord2FA plugin;
 
-    public AuthMeEvent() {
+    public AuthmeEvent() {
         this.plugin = Discord2FA.getInstance();
     }
 
