@@ -4,10 +4,7 @@
 
 ![3dc55fc814cf42b83e6c52957d7950550371773a](https://user-images.githubusercontent.com/38813828/103137289-a6305e00-46d8-11eb-8467-73f0cc2b00ab.png)
 
-**Discord2FA is a plugin that protect your players from malicious people.**
+**Discord2FA 2 (Fork Version) is a plugin that protect your players from malicious people.**
+**From current versions, the original plugin threw a fatal error when authenticating. Discord2FA 2 fixes this and other bugs.**
 
-* [SpigotMC Page](https://www.spigotmc.org/resources/discord2fa.75451/) 
-* [bStats](https://bstats.org/plugin/bukkit/Discord2FA/8019)
-
-**Contact**
-* Discord: **Umut Erarslan#8378**
+* [SpigotMC Page](https://www.spigotmc.org/resources/%E2%9C%A8-bettergiveaways-2-fork-version-%E2%9C%A8.110046/) 
