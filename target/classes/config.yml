@@ -81,8 +81,7 @@ messages:
   enable-discord-embed: true
   embed:
     title: '%player%'
-    description: '**%player%** ingresó desde **%country%** (IP **%ip%**).
-    Tu código de verificación es: **%code%**'
+    description: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
     first-field-title: 'IP Address %ip%'
     first-field-subtitle: '%ip%'
     second-field-title: 'Code %code%'
