@@ -7,4 +7,4 @@
 **Discord2FA 2 (Fork Version) is a plugin that protect your players from malicious people.**
 **From current versions, the original plugin threw a fatal error when authenticating. Discord2FA 2 fixes this and other bugs.**
 
-* [SpigotMC Page](https://www.spigotmc.org/resources/%E2%9C%A8-bettergiveaways-2-fork-version-%E2%9C%A8.110046/) 
+* [SpigotMC Page](https://www.spigotmc.org/resources/%E2%9C%A8-discord2fa-2-fork-version-%E2%9C%A8.110132/) 
