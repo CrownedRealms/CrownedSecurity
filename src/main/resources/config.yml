@@ -86,7 +86,7 @@ messages:
     first-field-subtitle: '%ip%'
     second-field-title: 'Code %code%'
     second-field-subtitle: '%code%'
-    image: 'https://crafthead.net/helm/%player%'
+    image: 'https://minotar.net/armor/bust/%player%/250.png'
   discord-message: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
   unknown-location-placeholder: 'Unknown'
   kick-message: '&cYou are kicked from the server because &fauth countdown time &cis reached! &cLeft rights&8:&f %rights%'
