@@ -75,10 +75,21 @@ canceled-events:
     whitelisted-inventory-types:
       - ANVIL
 
+# Available "discord-message" placeholders: %code%, %player%, %ip%, %country%, %city%, %isp%
 messages:
   auto-verify-success-message: '&8&l- &6Automatic verification successful!'
+  enable-discord-embed: true
+  embed:
+    title: '%player%'
+    description: '**%player%** ingresó desde **%country%** (IP **%ip%**).
+    Tu código de verificación es: **%code%**'
+    first-field-title: 'IP Address %ip%'
+    first-field-subtitle: '%ip%'
+    second-field-title: 'Code %code%'
+    second-field-subtitle: '%code%'
+    image: 'https://crafthead.net/helm/%player%'
   discord-message: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
-  unknown-country-placeholder: 'Unknown'
+  unknown-location-placeholder: 'Unknown'
   kick-message: '&cYou are kicked from the server because &fauth countdown time &cis reached! &cLeft rights&8:&f %rights%'
   msg-send-failed: '&8&l- &6Error while sending message to your Discord!'
   auth-message:

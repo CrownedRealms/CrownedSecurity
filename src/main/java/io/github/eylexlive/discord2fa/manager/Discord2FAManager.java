@@ -7,6 +7,8 @@ import io.github.eylexlive.discord2fa.event.AuthFailEvent;
 import io.github.eylexlive.discord2fa.task.Cancel2FAReqTask;
 import io.github.eylexlive.discord2fa.task.CountdownTask;
 import io.github.eylexlive.discord2fa.util.ConfigUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -28,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 /*
@@ -227,6 +230,70 @@ public class Discord2FAManager {
 
     }
 
+    private String getCity(String ip) {
+        
+        // Creamos la peticion a la API
+        String url = "http://ip-api.com/json/" + ip;
+        String json = null;
+
+        // Obtenemos la respuesta de la API y la guardamos en un String
+        try {
+                URL api = new URL(url);
+                URLConnection connection = api.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                json = in.readLine();
+                in.close();
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+        
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        JsonElement city = jsonObject.get("city"); 
+
+        if (city != null) {
+                String str_city = city.toString().replaceAll("\"", "");
+                return str_city;
+        } else {
+                return ConfigUtil.getString(
+                "messages.unknown-location-placeholder"
+                );
+        }
+
+    }
+
+    private String getISP(String ip) {
+        
+        // Creamos la peticion a la API
+        String url = "http://ip-api.com/json/" + ip;
+        String json = null;
+
+        // Obtenemos la respuesta de la API y la guardamos en un String
+        try {
+                URL api = new URL(url);
+                URLConnection connection = api.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                json = in.readLine();
+                in.close();
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+        
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        JsonElement isp = jsonObject.get("isp"); 
+
+        if (isp != null) {
+                String str_isp = isp.toString().replaceAll("\"", "");
+                return str_isp;
+        } else {
+                return ConfigUtil.getString(
+                "messages.unknown-location-placeholder"
+                );
+        }
+
+    }
+
     private String getCountry(String ip) {
         
         // Creamos la peticion a la API
@@ -253,7 +320,7 @@ public class Discord2FAManager {
                 return str_country;
         } else {
                 return ConfigUtil.getString(
-                "messages.unknown-country-placeholder"
+                "messages.unknown-location-placeholder"
                 );
         }
 
@@ -279,17 +346,93 @@ public class Discord2FAManager {
                 )
         );
 
-        if (!sendLog(
-                Collections.singletonList(memberId),
-                ConfigUtil.getString(
-                        "messages.discord-message",
-                        "code:" + playerData.getCheckCode(), 
-                        "ip:" + player.getAddress().getAddress().getHostAddress(),
-                        "player:" + player.getName(),
-                        "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress())
-                        //"location:" + this.ipLocation("8.8.8.8")
-                )
-        )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+    
+        if (ConfigUtil.getBoolean("messages.enable-discord-embed")) {
+
+                if (!sendLogEmbed(
+                        Collections.singletonList(memberId),
+                        // Title
+                        ConfigUtil.getString(
+                                "messages.embed.title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // Description
+                        ConfigUtil.getString(
+                                "messages.embed.description",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        //player
+                        player,
+                        // first field
+                        ConfigUtil.getString(
+                                "messages.embed.first-field-title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // first field value
+                        ConfigUtil.getString(
+                                "messages.embed.first-field-subtitle",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // second field
+                        ConfigUtil.getString(
+                                "messages.embed.second-field-title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // second field value
+                        ConfigUtil.getString(
+                                "messages.embed.second-field-subtitle",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        )
+
+                )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+                
+        } else {
+
+                if (!sendLog(
+                        Collections.singletonList(memberId),
+                        ConfigUtil.getString(
+                                "messages.discord-message",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        )
+                )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+
+        }
+
     }
 
     public void failPlayer(Player player) {
@@ -596,6 +739,96 @@ public class Discord2FAManager {
                 });
         return bool[0];
     }
+
+    /*
+     * Una funcion de getPlaceholder que me retorne 
+     * 
+     *          "code:" + playerData.getCheckCode(), 
+                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                "player:" + player.getName(),
+                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+     * 
+     */
+
+        public String getPlaceholders(Player player) {
+
+                final PlayerData playerData = getPlayerData(player);
+        
+                return "code:" + playerData.getCheckCode() + "\n" +
+                "ip:" + player.getAddress().getAddress().getHostAddress() + "\n" +
+                "player:" + player.getName() + "\n" +
+                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()) + "\n" +
+                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()) + "\n" +
+                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress());
+        
+        }
+
+        public boolean sendLogEmbed(
+                List<String> stringList, String title, String description, Player player,
+                String first_field_title, String first_field_subtitle, String second_field_title,
+                String second_field_subtitle) {
+
+            final boolean[] bool = {true};
+            final PlayerData playerData = getPlayerData(player);
+            stringList.forEach(id ->  {
+
+                final User user = plugin.getBot()
+                .getJDA()
+                .getUserById(id);
+
+                if (user == null)
+                return;
+
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+                
+                embedBuilder.setTitle(title);
+
+                embedBuilder.setDescription(description);
+            
+                // Agregar campo con una imagen como URL
+                embedBuilder.addField( first_field_title, first_field_subtitle, true);
+                
+                embedBuilder.setThumbnail(      ConfigUtil.getString(
+                        "messages.embed.image",
+                        "code:" + playerData.getCheckCode(), 
+                        "ip:" + player.getAddress().getAddress().getHostAddress(),
+                        "player:" + player.getName(),
+                        "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                        "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                        "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                )       );
+                // embedBuilder.setImage( ConfigUtil.getString("messages.embed.image", getPlaceholders(player)) ); 
+
+                // Printeamos la url de la imagen
+                //System.out.println( ConfigUtil.getString("messages.embed.image", getPlaceholders(player)) );
+
+                // Agregar campo con una imagen como URL
+                embedBuilder.addField( second_field_title, second_field_subtitle, true);
+            
+                embedBuilder.setTimestamp(OffsetDateTime.now());
+            
+                MessageEmbed embed = embedBuilder.build();
+                
+                user.openPrivateChannel()
+                        .flatMap(channel -> channel.sendMessage(embed))
+                        .queue(
+                                success -> {
+                                        System.out.println("[EMBED] Mensaje enviado correctamente");
+                                },
+                                error -> {
+                                        // Ocurrió un error al enviar el mensaje
+                                        System.out.println("[EMBED] Error al enviar el mensaje");
+                                        if (error != null)
+                                        bool[0] = false;
+                                }  
+                        );
+                });
+                
+                return bool[0];
+
+        }
 
     public boolean sendLog(List<String> stringList, String path) {
         final boolean[] bool = {true};

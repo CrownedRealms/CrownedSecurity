@@ -99,6 +99,11 @@ public class Discord2FA extends JavaPlugin {
         if (provider != null) provider.saveDatabase();
 
         if (bot != null) bot.logout();
+
+        bot.jda.shutdownNow();
+
+        getLogger().info("Conexiones del JDA cerradas correctamente.");
+
     }
 
     private void registerListeners() {

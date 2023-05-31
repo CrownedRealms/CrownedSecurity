@@ -22,7 +22,7 @@ public class Bot {
 
     private final Discord2FA plugin;
 
-    private JDA jda = null;
+    public JDA jda = null;
 
     public Bot(Discord2FA plugin) {
         this.plugin = plugin;
