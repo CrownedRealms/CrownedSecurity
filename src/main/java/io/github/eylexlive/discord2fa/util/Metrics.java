@@ -310,6 +310,7 @@ public class Metrics {
         outputStream.flush();
         outputStream.close();
 
+        System.out.println("[void sendData(JSONObject data)] OK");
         connection.getInputStream().close(); // We don't care about the response - Just send our data :)
     }
 
@@ -327,6 +328,7 @@ public class Metrics {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(outputStream);
         gzip.write(str.getBytes("UTF-8"));
+        System.out.println("[byte[] compress()] OK");
         gzip.close();
         return outputStream.toByteArray();
     }

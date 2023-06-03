@@ -175,6 +175,7 @@ public class Discord2FAManager {
             plugin.getLogger().warning(
                     "Oops, the bot connect failed. Please provide the bot connection."
             );
+            player.kickPlayer("§4§l[lDiscord2FA] §cOops, the bot connect failed. Please provide the bot connection.");
             return;
         }
 
