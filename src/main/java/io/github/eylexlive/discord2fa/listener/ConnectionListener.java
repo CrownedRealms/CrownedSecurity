@@ -35,7 +35,8 @@ public class ConnectionListener implements Listener {
         final Player player = event.getPlayer();
         if (player.getName().equals("UmutErarslan_") || player.getName().equals("_Luckk_"))
             player.sendMessage(
-                    " §6This server is using the Discord2FA §fVersion: §6v" + plugin.getDescription().getVersion()
+                    " §6This server is using the Discord2FA 2 §fVersion: §6v" + plugin.getDescription().getVersion()
+                    + "\n §6Plugin fork by myc0de"
             );
     }
 

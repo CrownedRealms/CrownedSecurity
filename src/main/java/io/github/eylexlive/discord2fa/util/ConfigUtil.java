@@ -2,9 +2,14 @@ package io.github.eylexlive.discord2fa.util;
 
 import io.github.eylexlive.discord2fa.Discord2FA;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,4 +57,24 @@ public class ConfigUtil {
         return plugin.getConfig().getInt(path);
     }
 
+    public static boolean verificarNombreEnArchivo(String nombre) {
+        try {
+            // Ruta del archivo database.yml
+            String archivoYml = "database.yml";
+
+            // Cargar el archivo YAML
+            Yaml yaml = new Yaml();
+            FileInputStream archivo = new FileInputStream(archivoYml);
+            Map<String, Object> datos = yaml.load(archivo);
+
+            // Verificar la existencia del nombre en el archivo
+            String clave = "verify." + nombre + ".ip";
+            return datos.containsKey(clave);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
 }

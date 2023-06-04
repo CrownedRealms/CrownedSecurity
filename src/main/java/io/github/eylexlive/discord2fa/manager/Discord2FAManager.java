@@ -172,11 +172,23 @@ public class Discord2FAManager {
                 player.sendMessage(
                         "§4§l[lDiscord2FA] §cHey! The bot connection must be provided to we send a code."
                 );
+
             plugin.getLogger().warning(
                     "Oops, the bot connect failed. Please provide the bot connection."
             );
             player.kickPlayer("§4§l[lDiscord2FA] §cOops, the bot connect failed. Please provide the bot connection.");
             return;
+        }
+
+        // Si el jugador tiene op y su cuenta no está vinculada a discord, se le expulsa del servidor.
+        else if (ConfigUtil.getBoolean("anti-op")) {
+                if (player.isOp()) {
+                        player.sendMessage(
+                                "§4§l[Discord2FA] §cHey! You can't be OP to use this server because your account is not linked to Discord."
+                        );
+                        //player.kickPlayer("§4§l[Discord2FA] §cHey! You can't be OP to use this server because your account is not linked to Discord.");
+                        return;
+                }
         }
 
         else if (!playerExits) {

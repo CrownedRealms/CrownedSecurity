@@ -107,8 +107,6 @@ public class AuthCommand implements CommandExecutor {
                     player.getActivePotionEffects().clear();
                     player.removePotionEffect(PotionEffectType.BLINDNESS);
 
-                    player.sendMessage("Turned off all potion effects!");
-
                 } else {
                     player.sendMessage(
                             "§cAn error occurred while authenticating!"
