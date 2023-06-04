@@ -122,7 +122,7 @@ public class Discord2FAManager {
         if (ConfigUtil.getBoolean("blind-on-auth")) {
 
                 // Blind player
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, ConfigUtil.getInt("auth-countdown"), 1));
 
         }
 
@@ -189,6 +189,7 @@ public class Discord2FAManager {
                         //player.kickPlayer("§4§l[Discord2FA] §cHey! You can't be OP to use this server because your account is not linked to Discord.");
                         return;
                 }
+                return;
         }
 
         else if (!playerExits) {
@@ -213,6 +214,8 @@ public class Discord2FAManager {
     }
 
     public void completeAuth(Player player) {
+        final PlayerData playerData = getPlayerData(player);
+
         if (!isInCheck(player))
             return;
 
@@ -221,16 +224,95 @@ public class Discord2FAManager {
         //unSitPlayer(player);
         unloadData(player);
 
-        if (ConfigUtil.getBoolean("logs.enabled"))
-            sendLog(
-                    ConfigUtil.getStringList(
-                            "logs.admin-ids"
-                    ),
-                    ConfigUtil.getString(
-                            "logs.player-authenticated",
-                            "player:" + player.getName()
-                    )
-            );
+        if (ConfigUtil.getBoolean("logs.enabled")) {
+
+            if (ConfigUtil.getBoolean("enable-discord-embed")) {
+
+                if (!sendLogEmbed(
+                        ConfigUtil.getStringList(
+                                "logs.admin-ids"
+                        ),
+                        // Title
+                        ConfigUtil.getString(
+                                "messages.embed.title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // Description
+                        ConfigUtil.getString(
+                                "messages.embed.description",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        //player
+                        player,
+                        // first field
+                        ConfigUtil.getString(
+                                "messages.embed.first-field-title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // first field value
+                        ConfigUtil.getString(
+                                "messages.embed.first-field-subtitle",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // second field
+                        ConfigUtil.getString(
+                                "messages.embed.second-field-title",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        ),
+                        // second field value
+                        ConfigUtil.getString(
+                                "messages.embed.second-field-subtitle",
+                                "code:" + playerData.getCheckCode(), 
+                                "ip:" + player.getAddress().getAddress().getHostAddress(),
+                                "player:" + player.getName(),
+                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
+                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
+                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
+                        )
+                        
+                        )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+
+                
+            } else {
+
+                sendLog(
+                        ConfigUtil.getStringList(
+                                "logs.admin-ids"
+                        ),
+                        ConfigUtil.getString(
+                                "logs.player-authenticated",
+                                "player:" + player.getName()
+                        )
+                );
+
+            }
+
+        }
 
         plugin.getLogger().info(
                 player.getName() + "'s account was authenticated!"
