@@ -105,6 +105,8 @@ public class AuthCommand implements CommandExecutor {
                             )
                     );
                     player.getActivePotionEffects().clear();
+                    // Limpiamos los efectos
+                    player.removePotionEffect(PotionEffectType.CONFUSION);
                     player.removePotionEffect(PotionEffectType.BLINDNESS);
 
                 } else {
