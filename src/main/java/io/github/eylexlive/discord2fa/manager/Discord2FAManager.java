@@ -123,7 +123,7 @@ public class Discord2FAManager {
         if (ConfigUtil.getBoolean("blind-on-auth")) {
 
                 // Blind player
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, ConfigUtil.getInt("auth-countdown"), 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000, 1));
 
         }
 
@@ -225,7 +225,7 @@ public class Discord2FAManager {
     
         
         unloadData(player);
-        /*
+
 
         if (ConfigUtil.getBoolean("logs.enabled")) {
     
@@ -258,7 +258,8 @@ public class Discord2FAManager {
             } else {
                 sendLog(
                         ConfigUtil.getStringList("logs.admin-ids"),
-                        ConfigUtil.getString("logs.player-authenticated", "player:" + player.getName())
+                        ConfigUtil.getString("logs.player-authenticated", "player:" + player.getName()),
+                        player
                 );
                 plugin.getLogger().info(player.getName() + " was authenticated, and the normal message was sent.");
                 admin_message_sended = "STATUS: SENDED, TYPE: NORMAL.";
@@ -268,23 +269,10 @@ public class Discord2FAManager {
             plugin.getLogger().info("Logs are disabled, so the private message was not sent.");
             admin_message_sended = "STATUS: DISABLED, TYPE: NONE.";
         }
-        
-        */
 
-        if (ConfigUtil.getBoolean("logs.enabled"))
-            sendLog(
-                    ConfigUtil.getStringList(
-                            "logs.admin-ids"
-                    ),
-                    ConfigUtil.getString(
-                            "logs.player-authenticated",
-                            "player:" + player.getName()
-                    ),
-                    player
-            );
 
         plugin.getLogger().info(
-                player.getName() + "'s account was authenticated!"
+                player.getName() + "'s account was authenticated. Log " + admin_message_sended
         );
         Bukkit.getScheduler().runTask(plugin, () ->
                 plugin.getServer().getPluginManager().callEvent(
@@ -534,6 +522,7 @@ public class Discord2FAManager {
 
     public void failPlayer(Player player) {
         final Server server = plugin.getServer();
+        String admin_message_sended = "";
 
         getPlayerData(player).setLeftRights(
                 ConfigUtil.getInt("number-of-rights")
@@ -546,17 +535,52 @@ public class Discord2FAManager {
                 )
         );
 
-        if (ConfigUtil.getBoolean("logs.enabled"))
-            if (!sendLog(
-                    ConfigUtil.getStringList(
-                            "logs.admin-ids"
-                    ),
-                    ConfigUtil.getString(
-                            "logs.player-reached-limit",
-                            "player:" + player.getName()
-                    ),
-                    player
-            )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+        if (ConfigUtil.getBoolean("logs.enabled")) {
+
+                if (ConfigUtil.getBoolean("logs.enable-admin-discord-embed")) {
+    
+                        plugin.getLogger().info("Trying to send the embed message to the Discord Admins...");
+            
+                        List<String> adminIds = ConfigUtil.getStringList("logs.admin-ids");
+                        boolean sendEmbed = sendLogEmbed(adminIds,
+                                ConfigUtil.getString("logs.embed-reached-limit.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                ConfigUtil.getString("logs.embed-reached-limit.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                player,
+                                ConfigUtil.getString("logs.embed-reached-limit.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                ConfigUtil.getString("logs.embed-reached-limit.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                ConfigUtil.getString("logs.embed-reached-limit.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                ConfigUtil.getString("logs.embed-reached-limit.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()))
+                        );
+            
+                        if (sendEmbed) {
+                            plugin.getLogger().info(player.getName() + " reached the limit, and the embed message was sent.");
+                            admin_message_sended = "STATUS: SENDED, TYPE: EMBED.";
+                        } else {
+                            player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+                            plugin.getLogger().info(player.getName() + " reached the limit, but the embed message could not be sent.");
+                            admin_message_sended = "STATUS: FAILED, TYPE: EMBED.";
+                        }
+            
+                    } else {
+
+                        if (!sendLog(
+                                ConfigUtil.getStringList(
+                                        "logs.admin-ids"
+                                ),
+                                ConfigUtil.getString(
+                                        "logs.player-reached-limit",
+                                        "player:" + player.getName()
+                                ),
+                                player
+                        )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+
+                    }
+
+
+                    // Enviamos log a la consola con la string de admin_message_sended
+                    plugin.getLogger().info("Player " + player.getName() + " reached the limit of failed attempts. " + admin_message_sended);
+        
+        }
 
         plugin.getServer().getPluginManager().callEvent(
                 new AuthFailEvent(player)
@@ -565,6 +589,8 @@ public class Discord2FAManager {
 
     public void failPlayer(Player player, int i) {
         final PlayerData playerData = getPlayerData(player);
+        String admin_message_sended = "";
+
         playerData.setLeftRights(
                 playerData.getLeftRights() - i
         );
@@ -576,17 +602,50 @@ public class Discord2FAManager {
                 )
         );
 
-        if (ConfigUtil.getBoolean("logs.enabled"))
-            if (!sendLog(
-                    ConfigUtil.getStringList(
-                            "logs.admin-ids"),
-                    ConfigUtil.getString(
-                            "logs.player-entered-wrong-code",
-                            "player:" + player.getName(),
-                            "left:" + playerData.getLeftRights()
-                    ),
-                    player
-            )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+        if (ConfigUtil.getBoolean("logs.enabled")) {
+
+                if (ConfigUtil.getBoolean("logs.enable-admin-discord-embed")) {
+    
+                        plugin.getLogger().info("Trying to send the embed message to the Discord Admins...");
+            
+                        List<String> adminIds = ConfigUtil.getStringList("logs.admin-ids");
+                        boolean sendEmbed = sendLogEmbed(
+                                adminIds,
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                player,
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights())
+                        );
+                    
+                        if (sendEmbed) {
+                            plugin.getLogger().info(player.getName() + " entered wrong code, and the embed message was sent.");
+                            admin_message_sended = "STATUS: SENDED, TYPE: EMBED.";
+                        } else {
+                            player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+                            plugin.getLogger().info(player.getName() + " entered wrong code, but the embed message could not be sent.");
+                            admin_message_sended = "STATUS: FAILED, TYPE: EMBED.";
+                        }
+            
+                    } else {
+                        if (!sendLog(
+                                ConfigUtil.getStringList(
+                                        "logs.admin-ids"),
+                                ConfigUtil.getString(
+                                        "logs.player-entered-wrong-code",
+                                        "player:" + player.getName(),
+                                        "left:" + playerData.getLeftRights()
+                                ),
+                                player
+                        )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+                        admin_message_sended = "STATUS: SENDED, TYPE: NORMAL.";
+                    }
+
+                    // Enviamos un log con admin_message_sended
+                    plugin.getLogger().info("Player " + player.getName() + " entered wrong code. " + admin_message_sended);
+        }
     }
 
     public String[] getAuthMessage(boolean state, int i) {
@@ -874,41 +933,21 @@ public class Discord2FAManager {
                 embedBuilder.setTimestamp(OffsetDateTime.now());
 
                 MessageEmbed embed = embedBuilder.build();
+
+                user.openPrivateChannel()
+                .flatMap(channel -> channel.sendMessage(embed))
+                .queue(
+                        success -> {
+                                plugin.getLogger().info("[EMBED] Mensaje enviado correctamente");
+                        },
+                        error -> {
+                                // Ocurrió un error al enviar el mensaje
+                                plugin.getLogger().info("[EMBED] Ocurrió un error al enviar el mensaje");
+                                if (error != null)
+                                bool[0] = false;
+                        }  
+                );
                 
-                if (id.equals(memberId)) {
-                        plugin.getLogger().info("[WARNING] The ID of the user is the same as the ID of the member.");
-
-                        // Usamos una funcion diferente para enviar el mensaje
-                        user.openPrivateChannel()
-                        .flatMap(channel -> channel.sendMessage(embed))
-                        .queue(
-                                success -> {
-                                        plugin.getLogger().info("[EMBED] Mensaje enviado correctamente");
-                                },
-                                error -> {
-                                        // Ocurrió un error al enviar el mensaje
-                                        plugin.getLogger().info("[EMBED] Ocurrió un error al enviar el mensaje");
-                                        if (error != null)
-                                        bool[0] = false;
-                                }  
-                        );
-                        
-                } else {
-
-                        user.openPrivateChannel()
-                        .flatMap(channel -> channel.sendMessage(embed))
-                        .queue(
-                                success -> {
-                                        plugin.getLogger().info("[EMBED] Mensaje enviado correctamente");
-                                },
-                                error -> {
-                                        // Ocurrió un error al enviar el mensaje
-                                        plugin.getLogger().info("[EMBED] Ocurrió un error al enviar el mensaje");
-                                        if (error != null)
-                                        bool[0] = false;
-                                }  
-                        );
-                }
 
         });
 
@@ -916,56 +955,27 @@ public class Discord2FAManager {
 
     }
 
-        
     public boolean sendLog(List<String> stringList, String path, Player player) {
         final boolean[] bool = {true};
-        
-        if (player == null) {
-                return bool[0];
-        }
-
-        final String memberId = plugin.getProvider().getMemberID(player);
-
         stringList.forEach(id ->  {
             final User user = plugin.getBot()
                     .getJDA()
                     .getUserById(id);
 
-            if (user == null) {
+            if (user == null)
                 return;
-            }
-
-            if (id.equals(memberId)) {
-
-                plugin.getLogger().info("[INFO] The ID " + id + " is the same as the memberId " + memberId + ". Trying to send a message to the user...");
-                sendLog(
-                        ConfigUtil.getString(
-                                "logs.player-authenticated",
-                                "player:" + player.getName()
-                        ),
-                        user
-                );
-            
-            } else {
-            
-                plugin.getLogger().info("[INFO] The ID " + id + " is not the same as the memberId " + memberId + ". Trying to send a message to the user...");
-            
-                user.openPrivateChannel()
-                .submit()
-                .thenCompose(channel ->
-                        channel.sendMessage(path).submit()
-                ).whenComplete((message, error) -> {
-                    if (error != null)
-                        bool[0] = false;
-                });
-            
-            }
-            
-
+            user.openPrivateChannel()
+                    .submit()
+                    .thenCompose(channel ->
+                            channel.sendMessage(path).submit()
+                    ).whenComplete((message, error) -> {
+                        if (error != null)
+                            bool[0] = false;
+                    });
         });
         return bool[0];
     }
-            
+
     public void sitPlayer(Player player) {
         final ArmorStand armorStand = (ArmorStand) player.getLocation()
                 .getWorld()

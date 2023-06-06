@@ -38,34 +38,31 @@ logs:
   enabled: true
   enable-admin-discord-embed: true
   embed-player-authenticated:
-    title: '%player%'
-    description: '**%player%**''s` account was authenticated.'
-    first-field-title: 'IP Address %ip%'
-    first-field-subtitle: '%ip%'
-    second-field-title: 'Code %code%'
-    second-field-subtitle: '%code%'
-    image: 'https://minotar.net/armor/bust/%player%/250.png'
+    title: '[ADMIN] Discord2FA 2'
+    description: '**%player%**''s account was authenticated.'
+    first-field-title: 'IP Address / ISP'
+    first-field-subtitle: '`%ip%` / `%isp%`'
+    second-field-title: 'Location'
+    second-field-subtitle: '%city%, **%country%**'
   embed-player-entered-wrong-code:
-    title: '%player%'
-    description: '**%player%** entered wrong code! Left rights: %left%'
-    first-field-title: 'IP Address %ip%'
-    first-field-subtitle: '%ip%'
-    second-field-title: 'Code %code%'
-    second-field-subtitle: '%code%'
-    image: 'https://minotar.net/armor/bust/%player%/250.png'
+    title: '[ADMIN] Discord2FA 2'
+    description: '**%player%** entered wrong code! Left rights: **%left%**'
+    first-field-title: 'IP Address / ISP'
+    first-field-subtitle: '`%ip%` / `%isp%`'
+    second-field-title: 'Location'
+    second-field-subtitle: '%city%, **%country%**'
   embed-reached-limit:
-    title: '%player%'
+    title: '[ADMIN] Discord2FA 2'
     description: '**%player%** reached the right limit!'
-    first-field-title: 'IP Address %ip%'
-    first-field-subtitle: '%ip%'
-    second-field-title: 'Code %code%'
-    second-field-subtitle: '%code%'
-    image: 'https://minotar.net/armor/bust/%player%/250.png'
+    first-field-title: 'IP Address / ISP'
+    first-field-subtitle: '`%ip%` / `%isp%`'
+    second-field-title: 'Location'
+    second-field-subtitle: '%city%, **%country%**'
   player-authenticated: '> `%player%''s` account was authenticated.'
   player-entered-wrong-code: '> `%player%` entered wrong code! Left rights: %left%'
   player-reached-limit: '> `%player%` reached the right limit!'
   admin-ids:
-    - 952806066767405086
+    - 844573235676446720
 
 canceled-events:
   command-use:
@@ -106,13 +103,12 @@ messages:
   auto-verify-success-message: '&8&l- &6Automatic verification successful!'
   enable-discord-embed: true
   embed:
-    title: '%player%'
+    title: 'Discord2FA 2'
     description: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
-    first-field-title: 'IP Address %ip%'
-    first-field-subtitle: '%ip%'
-    second-field-title: 'Code %code%'
-    second-field-subtitle: '%code%'
-    image: 'https://minotar.net/armor/bust/%player%/250.png'
+    first-field-title: 'IP Address / ISP'
+    first-field-subtitle: '`%ip%` / `%isp%`'
+    second-field-title: 'Code'
+    second-field-subtitle: '**%code%**'
   discord-message: '**%player%** joined from **%country%** (IP **%ip%**). Your code: **%code%**'
   unknown-location-placeholder: 'Unknown'
   kick-message: '&cYou are kicked from the server because &fauth countdown time &cis reached! &cLeft rights&8:&f %rights%'
