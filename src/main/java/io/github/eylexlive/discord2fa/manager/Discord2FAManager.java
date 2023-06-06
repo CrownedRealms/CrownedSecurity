@@ -9,6 +9,7 @@ import io.github.eylexlive.discord2fa.task.CountdownTask;
 import io.github.eylexlive.discord2fa.util.ConfigUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -215,104 +216,72 @@ public class Discord2FAManager {
 
     public void completeAuth(Player player) {
         final PlayerData playerData = getPlayerData(player);
-
+        String admin_message_sended = null;
+    
         if (!isInCheck(player))
             return;
-
+    
         checkPlayers.remove(player);
-
-        //unSitPlayer(player);
+    
+        
         unloadData(player);
+        /*
 
         if (ConfigUtil.getBoolean("logs.enabled")) {
-
-            if (ConfigUtil.getBoolean("enable-discord-embed")) {
-
-                if (!sendLogEmbed(
-                        ConfigUtil.getStringList(
-                                "logs.admin-ids"
-                        ),
-                        // Title
-                        ConfigUtil.getString(
-                                "messages.embed.title",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        ),
-                        // Description
-                        ConfigUtil.getString(
-                                "messages.embed.description",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        ),
-                        //player
+    
+            plugin.getLogger().info("Logs enabled, checking if discord embed logs are enabled...");
+    
+            if (ConfigUtil.getBoolean("logs.enable-admin-discord-embed")) {
+    
+                plugin.getLogger().info("Trying to send the embed message to the Discord Admins...");
+    
+                List<String> adminIds = ConfigUtil.getStringList("logs.admin-ids");
+                boolean sendEmbed = sendLogEmbed(adminIds,
+                        ConfigUtil.getString("logs.embed-player-authenticated.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        ConfigUtil.getString("logs.embed-player-authenticated.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
                         player,
-                        // first field
-                        ConfigUtil.getString(
-                                "messages.embed.first-field-title",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        ),
-                        // first field value
-                        ConfigUtil.getString(
-                                "messages.embed.first-field-subtitle",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        ),
-                        // second field
-                        ConfigUtil.getString(
-                                "messages.embed.second-field-title",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        ),
-                        // second field value
-                        ConfigUtil.getString(
-                                "messages.embed.second-field-subtitle",
-                                "code:" + playerData.getCheckCode(), 
-                                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                                "player:" + player.getName(),
-                                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        )
-                        
-                        )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
-
-                
-            } else {
-
-                sendLog(
-                        ConfigUtil.getStringList(
-                                "logs.admin-ids"
-                        ),
-                        ConfigUtil.getString(
-                                "logs.player-authenticated",
-                                "player:" + player.getName()
-                        )
+                        ConfigUtil.getString("logs.embed-player-authenticated.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        ConfigUtil.getString("logs.embed-player-authenticated.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        ConfigUtil.getString("logs.embed-player-authenticated.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        ConfigUtil.getString("logs.embed-player-authenticated.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()))
                 );
-
+    
+                if (sendEmbed) {
+                    plugin.getLogger().info(player.getName() + " was authenticated, and the embed message was sent.");
+                    admin_message_sended = "STATUS: SENDED, TYPE: EMBED.";
+                } else {
+                    player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
+                    plugin.getLogger().info(player.getName() + " was authenticated, but the embed message could not be sent.");
+                    admin_message_sended = "STATUS: FAILED, TYPE: EMBED.";
+                }
+    
+            } else {
+                sendLog(
+                        ConfigUtil.getStringList("logs.admin-ids"),
+                        ConfigUtil.getString("logs.player-authenticated", "player:" + player.getName())
+                );
+                plugin.getLogger().info(player.getName() + " was authenticated, and the normal message was sent.");
+                admin_message_sended = "STATUS: SENDED, TYPE: NORMAL.";
             }
-
+    
+        } else {
+            plugin.getLogger().info("Logs are disabled, so the private message was not sent.");
+            admin_message_sended = "STATUS: DISABLED, TYPE: NONE.";
         }
+        
+        */
+
+        if (ConfigUtil.getBoolean("logs.enabled"))
+            sendLog(
+                    ConfigUtil.getStringList(
+                            "logs.admin-ids"
+                    ),
+                    ConfigUtil.getString(
+                            "logs.player-authenticated",
+                            "player:" + player.getName()
+                    ),
+                    player
+            );
 
         plugin.getLogger().info(
                 player.getName() + "'s account was authenticated!"
@@ -331,6 +300,10 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String json = null;
 
+        if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+
         // Obtenemos la respuesta de la API y la guardamos en un String
         try {
                 URL api = new URL(url);
@@ -340,6 +313,12 @@ public class Discord2FAManager {
                 in.close();
         } catch (Exception e) {
                 e.printStackTrace();
+
+                plugin.getLogger().info(
+                        "The URL " + url + " API could not be reached, so the City is unknown."
+                );
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+
         }
         
         Gson gson = new Gson();
@@ -363,6 +342,10 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String json = null;
 
+        if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+
         // Obtenemos la respuesta de la API y la guardamos en un String
         try {
                 URL api = new URL(url);
@@ -372,6 +355,12 @@ public class Discord2FAManager {
                 in.close();
         } catch (Exception e) {
                 e.printStackTrace();
+
+                plugin.getLogger().info(
+                        "The URL " + url + " API could not be reached, so the ISP is unknown."
+                );
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+
         }
         
         Gson gson = new Gson();
@@ -395,6 +384,10 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String json = null;
 
+        if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+
         // Obtenemos la respuesta de la API y la guardamos en un String
         try {
                 URL api = new URL(url);
@@ -403,7 +396,15 @@ public class Discord2FAManager {
                 json = in.readLine();
                 in.close();
         } catch (Exception e) {
+
+
                 e.printStackTrace();
+
+                plugin.getLogger().info(
+                        "The URL " + url + " API could not be reached, so the country is unknown."
+                );
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
+
         }
         
         Gson gson = new Gson();
@@ -421,7 +422,7 @@ public class Discord2FAManager {
 
     }
 
-    private void sendCode(Player player, String code) {
+    public void sendCode(Player player, String code) {
         final PlayerData playerData = getPlayerData(player);
         final String memberId = plugin.getProvider().getMemberID(player);
 
@@ -523,7 +524,8 @@ public class Discord2FAManager {
                                 "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
                                 "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
                                 "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                        )
+                        ),
+                        player
                 )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
 
         }
@@ -552,7 +554,8 @@ public class Discord2FAManager {
                     ConfigUtil.getString(
                             "logs.player-reached-limit",
                             "player:" + player.getName()
-                    )
+                    ),
+                    player
             )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
 
         plugin.getServer().getPluginManager().callEvent(
@@ -581,7 +584,8 @@ public class Discord2FAManager {
                             "logs.player-entered-wrong-code",
                             "player:" + player.getName(),
                             "left:" + playerData.getLeftRights()
-                    )
+                    ),
+                    player
             )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
     }
 
@@ -835,117 +839,133 @@ public class Discord2FAManager {
         return bool[0];
     }
 
-    /*
-     * Una funcion de getPlaceholder que me retorne 
-     * 
-     *          "code:" + playerData.getCheckCode(), 
-                "ip:" + player.getAddress().getAddress().getHostAddress(),
-                "player:" + player.getName(),
-                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-     * 
-     */
 
-        public String getPlaceholders(Player player) {
+    public boolean sendLogEmbed(List<String> stringList, String title, String description, Player player,
+    String first_field_title, String first_field_subtitle, String second_field_title,
+    String second_field_subtitle) {
 
-                final PlayerData playerData = getPlayerData(player);
-        
-                return "code:" + playerData.getCheckCode() + "\n" +
-                "ip:" + player.getAddress().getAddress().getHostAddress() + "\n" +
-                "player:" + player.getName() + "\n" +
-                "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()) + "\n" +
-                "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()) + "\n" +
-                "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress());
-        
-        }
+        final boolean[] bool = {true};
+        final String memberId = plugin.getProvider().getMemberID(player);
 
-        public boolean sendLogEmbed(
-                List<String> stringList, String title, String description, Player player,
-                String first_field_title, String first_field_subtitle, String second_field_title,
-                String second_field_subtitle) {
+        stringList.forEach(id -> {
 
-            final boolean[] bool = {true};
-            final PlayerData playerData = getPlayerData(player);
-            stringList.forEach(id ->  {
+                final User user = plugin.getBot().getJDA().getUserById(id);
 
-                final User user = plugin.getBot()
-                .getJDA()
-                .getUserById(id);
-
-                if (user == null)
-                return;
+                if (user == null) {
+                        return; // Evitar enviar mensajes al propio usuario
+                }
 
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 
                 embedBuilder.setTitle(title);
-
                 embedBuilder.setDescription(description);
-            
+
                 // Agregar campo con una imagen como URL
-                embedBuilder.addField( first_field_title, first_field_subtitle, true);
+                embedBuilder.addField(first_field_title, first_field_subtitle, true);
                 
-                embedBuilder.setThumbnail(      ConfigUtil.getString(
-                        "messages.embed.image",
-                        "code:" + playerData.getCheckCode(), 
-                        "ip:" + player.getAddress().getAddress().getHostAddress(),
-                        "player:" + player.getName(),
-                        "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()),
-                        "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()),
-                        "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())
-                )       );
-                // embedBuilder.setImage( ConfigUtil.getString("messages.embed.image", getPlaceholders(player)) ); 
-
-                // Printeamos la url de la imagen
-                //System.out.println( ConfigUtil.getString("messages.embed.image", getPlaceholders(player)) );
+                embedBuilder.setThumbnail(ConfigUtil.getString(
+                        "discord-embed-image",
+                        "player:" + player.getName()
+                ));
 
                 // Agregar campo con una imagen como URL
-                embedBuilder.addField( second_field_title, second_field_subtitle, true);
-            
+                embedBuilder.addField(second_field_title, second_field_subtitle, true);
+
                 embedBuilder.setTimestamp(OffsetDateTime.now());
-            
+
                 MessageEmbed embed = embedBuilder.build();
                 
-                user.openPrivateChannel()
+                if (id.equals(memberId)) {
+                        plugin.getLogger().info("[WARNING] The ID of the user is the same as the ID of the member.");
+
+                        // Usamos una funcion diferente para enviar el mensaje
+                        user.openPrivateChannel()
                         .flatMap(channel -> channel.sendMessage(embed))
                         .queue(
                                 success -> {
-                                        System.out.println("[EMBED] Mensaje enviado correctamente");
+                                        plugin.getLogger().info("[EMBED] Mensaje enviado correctamente");
                                 },
                                 error -> {
                                         // Ocurrió un error al enviar el mensaje
-                                        System.out.println("[EMBED] Error al enviar el mensaje");
+                                        plugin.getLogger().info("[EMBED] Ocurrió un error al enviar el mensaje");
                                         if (error != null)
                                         bool[0] = false;
                                 }  
                         );
-                });
-                
-                return bool[0];
+                        
+                } else {
 
+                        user.openPrivateChannel()
+                        .flatMap(channel -> channel.sendMessage(embed))
+                        .queue(
+                                success -> {
+                                        plugin.getLogger().info("[EMBED] Mensaje enviado correctamente");
+                                },
+                                error -> {
+                                        // Ocurrió un error al enviar el mensaje
+                                        plugin.getLogger().info("[EMBED] Ocurrió un error al enviar el mensaje");
+                                        if (error != null)
+                                        bool[0] = false;
+                                }  
+                        );
+                }
+
+        });
+
+        return bool[0];
+
+    }
+
+        
+    public boolean sendLog(List<String> stringList, String path, Player player) {
+        final boolean[] bool = {true};
+        
+        if (player == null) {
+                return bool[0];
         }
 
-    public boolean sendLog(List<String> stringList, String path) {
-        final boolean[] bool = {true};
+        final String memberId = plugin.getProvider().getMemberID(player);
+
         stringList.forEach(id ->  {
             final User user = plugin.getBot()
                     .getJDA()
                     .getUserById(id);
 
-            if (user == null)
+            if (user == null) {
                 return;
-            user.openPrivateChannel()
-                    .submit()
-                    .thenCompose(channel ->
-                            channel.sendMessage(path).submit()
-                    ).whenComplete((message, error) -> {
-                        if (error != null)
-                            bool[0] = false;
-                    });
+            }
+
+            if (id.equals(memberId)) {
+
+                plugin.getLogger().info("[INFO] The ID " + id + " is the same as the memberId " + memberId + ". Trying to send a message to the user...");
+                sendLog(
+                        ConfigUtil.getString(
+                                "logs.player-authenticated",
+                                "player:" + player.getName()
+                        ),
+                        user
+                );
+            
+            } else {
+            
+                plugin.getLogger().info("[INFO] The ID " + id + " is not the same as the memberId " + memberId + ". Trying to send a message to the user...");
+            
+                user.openPrivateChannel()
+                .submit()
+                .thenCompose(channel ->
+                        channel.sendMessage(path).submit()
+                ).whenComplete((message, error) -> {
+                    if (error != null)
+                        bool[0] = false;
+                });
+            
+            }
+            
+
         });
         return bool[0];
     }
-
+            
     public void sitPlayer(Player player) {
         final ArmorStand armorStand = (ArmorStand) player.getLocation()
                 .getWorld()

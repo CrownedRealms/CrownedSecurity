@@ -35,7 +35,7 @@ public class PluginHook {
 
         if (!pluginManager.isPluginEnabled(hookType.name())) {
             logger.warning(
-                    "ERROR: There was an error hooking into " + hookType.name() + "!"
+                    "[WARNING] There was an error hooking into " + hookType.name() + "."
             );
             return this;
         }

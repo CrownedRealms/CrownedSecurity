@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 /*
@@ -98,9 +99,28 @@ public class Discord2FA extends JavaPlugin {
 
         if (provider != null) provider.saveDatabase();
 
-        if (bot != null) bot.logout();
+        if (bot != null) {
+            
+            bot.logout();
+            bot.jda.shutdownNow();
+        
+        }
 
-        bot.jda.shutdownNow();
+        bot.jda.shutdown();
+        bot.jda.getHttpClient().connectionPool().evictAll();
+        bot.jda.getHttpClient().dispatcher().executorService().shutdown();
+        
+        // Esperamos 10 segundos y volvemos a comprobar si se han cerrado las conexiones.
+
+        try {
+            Thread.sleep(Duration.ofSeconds(5).toMillis());
+            bot.jda.shutdown();
+            bot.jda.getHttpClient().connectionPool().evictAll();
+            bot.jda.getHttpClient().dispatcher().executorService().shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
 
         getLogger().info("Conexiones del JDA cerradas correctamente.");
 

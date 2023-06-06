@@ -21,6 +21,7 @@ check-for-updates: true
 generate-new-code-always: true
 auto-verification: true
 blind-on-auth: true
+discord-embed-image: 'https://minotar.net/armor/bust/%player%/250.png'
 
 code-lenght: 6
 code-type: NUMERIC
@@ -35,7 +36,7 @@ authentication-for-players:
 
 logs:
   enabled: true
-  enable-discord-embed: true
+  enable-admin-discord-embed: true
   embed-player-authenticated:
     title: '%player%'
     description: '**%player%**''s` account was authenticated.'
