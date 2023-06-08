@@ -104,10 +104,11 @@ public class AuthCommand implements CommandExecutor {
                                     "messages.auth-command.auth-success-message"
                             )
                     );
-                    player.getActivePotionEffects().clear();
-                    // Limpiamos los efectos
-                    player.removePotionEffect(PotionEffectType.CONFUSION);
-                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+                   
+                    //Use an enhanced for loop to get each element of the collection returned by Player#getActivePotionEffects and set that element to the variable we created effect.
+                    for (PotionEffect effect : player.getActivePotionEffects()){
+                        player.removePotionEffect(effect.getType());
+                    }
 
                 } else {
                     player.sendMessage(

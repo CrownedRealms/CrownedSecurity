@@ -283,132 +283,137 @@ public class Discord2FAManager {
     }
 
     private String getCity(String ip) {
-        
-        // Creamos la peticion a la API
-        String url = "http://ip-api.com/json/" + ip;
-        String json = null;
-
         if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-            }
-
-        // Obtenemos la respuesta de la API y la guardamos en un String
-        try {
+            return ConfigUtil.getString("messages.unknown-location-placeholder");
+        }
+    
+        String url = "http://ip-api.com/json/" + ip;
+        String[] result = new String[1];
+    
+        Thread thread = new Thread(() -> {
+            try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                json = in.readLine();
+                String json = in.readLine();
                 in.close();
-        } catch (Exception e) {
+    
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+                JsonElement city = jsonObject.get("city");
+    
+                if (city != null) {
+                    String str_city = city.toString().replaceAll("\"", "");
+                    result[0] = str_city;
+                } else {
+                    result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
-
-                plugin.getLogger().info(
-                        "The URL " + url + " API could not be reached, so the City is unknown."
-                );
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-
+                plugin.getLogger().info("The URL " + url + " API could not be reached, so the City is unknown.");
+                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+        });
+    
+        thread.start();
+    
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-        JsonElement city = jsonObject.get("city"); 
-
-        if (city != null) {
-                String str_city = city.toString().replaceAll("\"", "");
-                return str_city;
-        } else {
-                return ConfigUtil.getString(
-                "messages.unknown-location-placeholder"
-                );
-        }
-
+    
+        return result[0];
     }
-
+    
     private String getISP(String ip) {
-        
-        // Creamos la peticion a la API
-        String url = "http://ip-api.com/json/" + ip;
-        String json = null;
-
         if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-            }
-
-        // Obtenemos la respuesta de la API y la guardamos en un String
-        try {
+            return ConfigUtil.getString("messages.unknown-location-placeholder");
+        }
+    
+        String url = "http://ip-api.com/json/" + ip;
+        String[] result = new String[1];
+    
+        Thread thread = new Thread(() -> {
+            try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                json = in.readLine();
+                String json = in.readLine();
                 in.close();
-        } catch (Exception e) {
+    
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+                JsonElement isp = jsonObject.get("isp");
+    
+                if (isp != null) {
+                    String str_isp = isp.toString().replaceAll("\"", "");
+                    result[0] = str_isp;
+                } else {
+                    result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
-
-                plugin.getLogger().info(
-                        "The URL " + url + " API could not be reached, so the ISP is unknown."
-                );
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-
+                plugin.getLogger().info("The URL " + url + " API could not be reached, so the ISP is unknown.");
+                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+        });
+    
+        thread.start();
+    
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-        JsonElement isp = jsonObject.get("isp"); 
-
-        if (isp != null) {
-                String str_isp = isp.toString().replaceAll("\"", "");
-                return str_isp;
-        } else {
-                return ConfigUtil.getString(
-                "messages.unknown-location-placeholder"
-                );
-        }
-
-    }
+    
+        return result[0];
+    }    
 
     private String getCountry(String ip) {
-        
-        // Creamos la peticion a la API
-        String url = "http://ip-api.com/json/" + ip;
-        String json = null;
-
         if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-            }
-
-        // Obtenemos la respuesta de la API y la guardamos en un String
-        try {
+            return ConfigUtil.getString("messages.unknown-location-placeholder");
+        }
+    
+        String url = "http://ip-api.com/json/" + ip;
+        String[] result = new String[1];
+    
+        Thread thread = new Thread(() -> {
+            try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                json = in.readLine();
+                String json = in.readLine();
                 in.close();
-        } catch (Exception e) {
-
-
+    
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+                JsonElement country = jsonObject.get("country");
+    
+                if (country != null) {
+                    String str_country = country.toString().replaceAll("\"", "");
+                    result[0] = str_country;
+                } else {
+                    result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
-
-                plugin.getLogger().info(
-                        "The URL " + url + " API could not be reached, so the country is unknown."
-                );
-                return ConfigUtil.getString("messages.unknown-location-placeholder");
-
+                plugin.getLogger().info("The URL " + url + " API could not be reached, so the country is unknown.");
+                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+            }
+        });
+    
+        thread.start();
+    
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-        JsonElement country = jsonObject.get("country"); 
-
-        if (country != null) {
-                String str_country = country.toString().replaceAll("\"", "");
-                return str_country;
-        } else {
-                return ConfigUtil.getString(
-                "messages.unknown-location-placeholder"
-                );
-        }
-
+    
+        return result[0];
     }
+    
 
     public void sendCode(Player player, String code) {
         final PlayerData playerData = getPlayerData(player);
