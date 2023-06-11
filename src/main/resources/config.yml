@@ -63,6 +63,8 @@ logs:
   player-reached-limit: '> `%player%` reached the right limit!'
   admin-ids:
     - 844573235676446720
+  enable-webhook-discord-embed: true
+  webhook-url: 'Your webhook URL here.'
 
 canceled-events:
   command-use:

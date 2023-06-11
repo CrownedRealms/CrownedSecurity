@@ -7,7 +7,9 @@ import io.github.eylexlive.discord2fa.event.AuthFailEvent;
 import io.github.eylexlive.discord2fa.task.Cancel2FAReqTask;
 import io.github.eylexlive.discord2fa.task.CountdownTask;
 import io.github.eylexlive.discord2fa.util.ConfigUtil;
+import io.github.eylexlive.discord2fa.util.DiscordWebhook;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
@@ -263,6 +265,34 @@ public class Discord2FAManager {
                 );
                 plugin.getLogger().info(player.getName() + " was authenticated, and the normal message was sent.");
                 admin_message_sended = "STATUS: SENDED, TYPE: NORMAL.";
+            }
+
+            if (ConfigUtil.getBoolean("logs.enable-webhook-discord-embed")) {
+
+                String webhook_url = ConfigUtil.getString("logs.webhook-url");
+                DiscordWebhook.sendWebhook(
+                        // URL
+                        webhook_url, 
+                        // Title
+                        ConfigUtil.getString("logs.embed-player-authenticated.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())), 
+                        // embedContent
+                        ConfigUtil.getString("logs.embed-player-authenticated.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        // Embed Image
+                        ConfigUtil.getString("discord-embed-image", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        // Field title
+                        ConfigUtil.getString("logs.embed-player-authenticated.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        // Field subtitle
+                        ConfigUtil.getString("logs.embed-player-authenticated.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        // Field title 2
+                        ConfigUtil.getString("logs.embed-player-authenticated.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                        // Field subtitle 2
+                        ConfigUtil.getString("logs.embed-player-authenticated.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()))
+                        );
+                plugin.getLogger().info("Webhook was sent.");
+
+
+            } else {
+                plugin.getLogger().info("Webhook is disabled, so the webhook was not sent.");
             }
     
         } else {
@@ -581,6 +611,35 @@ public class Discord2FAManager {
 
                     }
 
+                if (ConfigUtil.getBoolean("logs.enable-webhook-discord-embed")) {
+
+                        String webhook_url = ConfigUtil.getString("logs.webhook-url");
+                        DiscordWebhook.sendWebhook(
+                                // URL
+                                webhook_url, 
+                                // Title
+                                ConfigUtil.getString("logs.embed-reached-limit.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())), 
+                                // embedContent
+                                ConfigUtil.getString("logs.embed-reached-limit.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Embed Image
+                                ConfigUtil.getString("discord-embed-image", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field title
+                                ConfigUtil.getString("logs.embed-reached-limit.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field subtitle
+                                ConfigUtil.getString("logs.embed-reached-limit.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field title 2
+                                ConfigUtil.getString("logs.embed-reached-limit.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field subtitle 2
+                                ConfigUtil.getString("logs.embed-reached-limit.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()))
+                                );
+                        plugin.getLogger().info("Webhook was sent.");
+
+
+                } else {
+                        plugin.getLogger().info("Webhook is disabled, so the webhook was not sent.");
+                }
+        
+
 
                     // Enviamos log a la consola con la string de admin_message_sended
                     plugin.getLogger().info("Player " + player.getName() + " reached the limit of failed attempts. " + admin_message_sended);
@@ -647,6 +706,35 @@ public class Discord2FAManager {
                         )) player.sendMessage(ConfigUtil.getString("messages.msg-send-failed"));
                         admin_message_sended = "STATUS: SENDED, TYPE: NORMAL.";
                     }
+
+                if (ConfigUtil.getBoolean("logs.enable-webhook-discord-embed")) {
+
+                        String webhook_url = ConfigUtil.getString("logs.webhook-url");
+                        DiscordWebhook.sendWebhook(
+                                // URL
+                                webhook_url, 
+                                // Title
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())), 
+                                // embedContent
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.description", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()), "left:" + playerData.getLeftRights()),
+                                // Embed Image
+                                ConfigUtil.getString("discord-embed-image", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field title
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.first-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field subtitle
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.first-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field title 2
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.second-field-title", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress())),
+                                // Field subtitle 2
+                                ConfigUtil.getString("logs.embed-player-entered-wrong-code.second-field-subtitle", "ip:" + player.getAddress().getAddress().getHostAddress(), "player:" + player.getName(), "country:" + this.getCountry(player.getAddress().getAddress().getHostAddress()), "city:" + this.getCity(player.getAddress().getAddress().getHostAddress()), "isp:" + this.getISP(player.getAddress().getAddress().getHostAddress()))
+                                );
+                        plugin.getLogger().info("Webhook was sent.");
+
+
+                } else {
+                        plugin.getLogger().info("Webhook is disabled, so the webhook was not sent.");
+                }
+        
 
                     // Enviamos un log con admin_message_sended
                     plugin.getLogger().info("Player " + player.getName() + " entered wrong code. " + admin_message_sended);
