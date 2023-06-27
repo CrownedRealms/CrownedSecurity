@@ -29,5 +29,7 @@ public class PlayerInteractListener implements Listener {
         final boolean cancelled = !ConfigUtil.getStringList("canceled-events.player-interact.whitelisted-actions")
                 .contains(event.getAction().name());
         event.setCancelled(cancelled);
+        // En caso que el jugador se mueva mientras está en el proceso de autenticación, se cancela el proceso.
+        player.setWalkSpeed(cancelled ? 0 : 0.2f);
     }
 }

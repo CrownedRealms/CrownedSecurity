@@ -320,7 +320,6 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String[] result = new String[1];
     
-        Thread thread = new Thread(() -> {
             try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
@@ -343,16 +342,7 @@ public class Discord2FAManager {
                 plugin.getLogger().info("The URL " + url + " API could not be reached, so the City is unknown.");
                 result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
             }
-        });
-    
-        thread.start();
-    
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    
+
         return result[0];
     }
     
@@ -364,7 +354,6 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String[] result = new String[1];
     
-        Thread thread = new Thread(() -> {
             try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
@@ -387,15 +376,7 @@ public class Discord2FAManager {
                 plugin.getLogger().info("The URL " + url + " API could not be reached, so the ISP is unknown.");
                 result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
             }
-        });
-    
-        thread.start();
-    
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     
         return result[0];
     }    
@@ -408,7 +389,6 @@ public class Discord2FAManager {
         String url = "http://ip-api.com/json/" + ip;
         String[] result = new String[1];
     
-        Thread thread = new Thread(() -> {
             try {
                 URL api = new URL(url);
                 URLConnection connection = api.openConnection();
@@ -431,15 +411,7 @@ public class Discord2FAManager {
                 plugin.getLogger().info("The URL " + url + " API could not be reached, so the country is unknown.");
                 result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
             }
-        });
-    
-        thread.start();
-    
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     
         return result[0];
     }
