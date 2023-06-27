@@ -99,8 +99,6 @@ canceled-events:
     cancel: true
     whitelisted-inventory-types:
       - ANVIL
-  player-movement:
-    cancel: true
 
 # Available "embed" or "discord-message" placeholders: %code%, %player%, %ip%, %country%, %city%, %isp%
 messages:
