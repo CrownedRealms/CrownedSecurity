@@ -31,6 +31,7 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.OffsetDateTime;
@@ -381,40 +382,48 @@ public class Discord2FAManager {
         return result[0];
     }    
 
-    private String getCountry(String ip) {
+        private String getCountry(String ip) {
         if (ip == null || ip.equals("127.0.0.1") || ip.equals("localhost") || ip.equals("0.0.0.0")) {
-            return ConfigUtil.getString("messages.unknown-location-placeholder");
+                return ConfigUtil.getString("messages.unknown-location-placeholder");
         }
-    
+
         String url = "http://ip-api.com/json/" + ip;
         String[] result = new String[1];
-    
-            try {
+
+        try {
                 URL api = new URL(url);
-                URLConnection connection = api.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) api.openConnection();
+                connection.setRequestMethod("GET");
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String json = in.readLine();
                 in.close();
-    
+
                 Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
                 JsonElement country = jsonObject.get("country");
-    
-                if (country != null) {
-                    String str_country = country.toString().replaceAll("\"", "");
-                    result[0] = str_country;
-                } else {
-                    result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                plugin.getLogger().info("The URL " + url + " API could not be reached, so the country is unknown.");
-                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
-            }
 
-    
+                if (country != null) {
+                        String str_country = country.getAsString();
+                        result[0] = str_country;
+                } else {
+                        result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+                }
+                } else {
+                // Handle non-OK response code, if needed.
+                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+                }
+        } catch (Exception e) {
+                e.printStackTrace();
+                plugin.getLogger().info("The URL " + url + " API could not be reached, so the Country is unknown.");
+                result[0] = ConfigUtil.getString("messages.unknown-location-placeholder");
+        }
+
         return result[0];
-    }
+        }
+
     
 
     public void sendCode(Player player, String code) {

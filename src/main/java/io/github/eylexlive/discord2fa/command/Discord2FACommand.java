@@ -155,7 +155,7 @@ public class Discord2FACommand implements CommandExecutor {
 
             final String discord = args[2];
             if (args[0].equalsIgnoreCase("addtoverifylist")) {
-                if (discord.length() != 18) {
+                if (discord.length() != 18 || discord.length() != 19) {
                     sender.sendMessage(
                             ConfigUtil.getString(
                                     "messages.discord2fa-command.invalid-discord-id"
