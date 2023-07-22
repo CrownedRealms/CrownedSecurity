@@ -99,13 +99,6 @@ public class Discord2FA extends JavaPlugin {
 
         if (provider != null) provider.saveDatabase();
 
-        if (bot != null) {
-            
-            bot.logout();
-            bot.jda.shutdownNow();
-        
-        }
-
         bot.jda.shutdown();
         bot.jda.getHttpClient().connectionPool().evictAll();
         bot.jda.getHttpClient().dispatcher().executorService().shutdown();

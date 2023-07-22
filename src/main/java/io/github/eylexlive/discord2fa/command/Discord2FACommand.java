@@ -155,11 +155,14 @@ public class Discord2FACommand implements CommandExecutor {
 
             final String discord = args[2];
             if (args[0].equalsIgnoreCase("addtoverifylist")) {
-                if (discord.length() != 18 || discord.length() != 19) {
+                if (discord.length() != 18 && discord.length() != 19) {
                     sender.sendMessage(
                             ConfigUtil.getString(
                                     "messages.discord2fa-command.invalid-discord-id"
                             )
+                    );
+                    plugin.getLogger().warning(
+                        "Oops, the Discord length is not 18 or 19 characters long, is: " + discord.length()
                     );
                     return true;
                 }
